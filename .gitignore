@@ -3,3 +3,5 @@ secret/
 *.json
 *.pyc
 *.iml
+csv/
+*.csv
