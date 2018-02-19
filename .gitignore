@@ -2,3 +2,4 @@ secret/
 .idea
 *.json
 *.pyc
+*.iml
