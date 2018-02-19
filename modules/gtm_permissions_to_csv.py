@@ -3,6 +3,7 @@ import auth
 import argparse
 import os
 import csv
+import re
 
 
 def get_accounts(service, accounts):
@@ -25,8 +26,16 @@ def get_permissions(service, aid):
     return permissions.get('userPermission')
 
 
+def get_valid_filename(s):
+    """
+    Adapted from https://github.com/django/django/blob/master/django/utils/text.py
+    """
+    s = str(s).strip().replace(' ', '_')
+    return re.sub(r'(?u)[^-\w.]', '', s).lower()
+
+
 def build_csv(permissions, account):
-    with open('csv/%s.csv' % account['accountId'], 'wb') as myfile:
+    with open('csv/%s_%s.csv' % (get_valid_filename(account['name']), account['accountId']), 'wb') as myfile:
         wr = csv.writer(myfile)
         wr.writerow(['Account name', account['name']])
         wr.writerow(['Account ID', account['accountId']])
@@ -51,10 +60,16 @@ def main(argv):
 
     account_list = get_accounts(service, accounts)
 
+    if len(account_list) == 0:
+        if accounts == 'all':
+            print('Your Google ID doesn\'t have access to any GTM accounts!')
+        else:
+            print('You don\'t have permissions to access any of the accountIds you listed in the arguments!')
+
     for account in account_list:
         print('\nFetching permissions for account "%s" (%s)...' % (account['name'], account['accountId']))
         permissions = get_permissions(service, account['accountId'])
-        print('Building "csv/%s.csv"...' % account['accountId'])
+        print('Building "csv/%s_%s.csv"...' % (get_valid_filename(account['name']), account['accountId']))
         if not os.path.exists('csv'):
             os.makedirs('csv')
         build_csv(permissions, account)
