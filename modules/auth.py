@@ -1,5 +1,4 @@
 import argparse
-import sys
 
 import httplib2
 
@@ -7,6 +6,7 @@ from apiclient.discovery import build
 from oauth2client import client
 from oauth2client import file
 from oauth2client import tools
+
 
 def auth(api_name, api_version, scope, client_secrets_path):
 
