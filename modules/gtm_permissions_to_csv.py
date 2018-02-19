@@ -22,7 +22,7 @@ def get_accounts(service, accounts):
 
 
 def get_permissions(service, aid):
-    permissions = service.accounts().user_permissions().list(parent='accounts/%s' % aid, fields='userPermission(emailAddress)').execute()
+    permissions = service.accounts().user_permissions().list(parent='accounts/%s' % aid, fields='userPermission(emailAddress,path)').execute()
     return permissions.get('userPermission')
 
 
@@ -40,8 +40,9 @@ def build_csv(permissions, account):
         wr.writerow(['Account name', account['name']])
         wr.writerow(['Account ID', account['accountId']])
         wr.writerow([])
+        wr.writerow(['Email address', 'Permission ID'])
         for permission in permissions:
-            wr.writerow([permission['emailAddress']])
+            wr.writerow([permission['emailAddress'], permission['path'].split('/').pop()])
 
 
 def main(argv):
